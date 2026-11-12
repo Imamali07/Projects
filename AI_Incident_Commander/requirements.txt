@@ -1,0 +1,11 @@
+
+fastapi
+uvicorn
+prometheus-client
+requests
+streamlit
+pandas
+python-dotenv
+pydantic
+sqlalchemy
+scikit-learn

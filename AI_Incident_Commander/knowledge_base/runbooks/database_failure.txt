@@ -1,0 +1,29 @@
+﻿Incident: Database Connection Failure
+
+Symptoms:
+- Message sending requests fail.
+- Database connection failed errors appear.
+- messages_failed_total increases.
+
+Possible root causes:
+- Database server is unavailable.
+- Database connection pool is exhausted.
+- Incorrect database credentials.
+- Network connectivity problems.
+
+Investigation:
+1. Check database server health.
+2. Check database connection settings.
+3. Check active database connections.
+4. Inspect application error logs.
+
+Remediation:
+1. Verify the database server is running.
+2. Restore network connectivity if unavailable.
+3. Verify database credentials.
+4. Restart the application only after confirming the database is healthy.
+
+Verification:
+1. Check application health endpoint.
+2. Send a test message.
+3. Confirm messages_failed_total stops increasing.

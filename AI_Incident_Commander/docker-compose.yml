@@ -1,0 +1,66 @@
+
+services:
+  sample-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn sample_application.main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./sample_application:/app/sample_application
+    restart: unless-stopped
+
+  incident-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./app:/app/app
+      - ./knowledge_base:/app/knowledge_base
+      - ./data:/app/data
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: streamlit run dashboard/dashboard.py --server.address 0.0.0.0 --server.port 8501
+    ports:
+      - "8501:8501"
+    environment:
+      API_BASE_URL: http://incident-api:8000
+    volumes:
+      - ./dashboard:/app/dashboard
+    depends_on:
+      - incident-api
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - sample-app
+      - incident-api
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+      - loki
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
